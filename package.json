@@ -1,0 +1,9 @@
+{
+	"name": "manyullyn-framework-monorepo",
+	"scripts": {
+		"preinstall": "npx only-allow pnpm"
+	},
+	"devDependencies": {
+		"@changesets/cli": "^2.20.0"
+	}
+}

@@ -1,0 +1,35 @@
+{
+  "name": "@manyullyn/framework",
+  "version": "0.0.1",
+  "author": "phoenix_13",
+  "license": "GPL-3.0",
+  "description": "A chatbot and command framework for everything",
+  "main": "dist/index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "preinstall": "npx only-allow pnpm",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ixhbinphoenix/manyullyn-framework.git",
+    "directory": "packages/framework"
+  },
+  "keywords": [
+    "chatbot",
+    "command",
+    "twitch",
+    "discord"
+  ],
+  "bugs": {
+    "url": "https://github.com/ixhbinphoenix/manyullyn-framework/issues"
+  },
+  "homepage": "https://github.com/ixhbinphoenix/manyullyn-framework/tree/master/packages/framework#readme",
+  "devDependencies": {
+    "@types/node": "^17.0.17",
+    "prettier": "^2.5.1",
+    "typescript": "^4.5.5"
+  }
+}
