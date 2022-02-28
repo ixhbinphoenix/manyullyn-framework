@@ -1,5 +1,11 @@
 # @manyullyn/framework
 
+## 0.0.3
+
+### Patch Changes
+
+- Added command system
+
 ## 0.0.2
 
 ### Patch Changes
