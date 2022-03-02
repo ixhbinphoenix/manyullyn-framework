@@ -44,7 +44,6 @@ export async function debug(msg: string) {
       .color("black")
       .log("[DEBUG]")
       .joint()
-      .color("black")
       .log(" " + msg);
   }
 }

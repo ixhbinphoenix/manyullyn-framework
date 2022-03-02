@@ -3,3 +3,5 @@ node_modules/
 test/
 tsconfig.json
 pnpm-lock.yaml
+test/
+.env

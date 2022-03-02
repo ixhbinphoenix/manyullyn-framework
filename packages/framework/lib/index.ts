@@ -37,32 +37,35 @@ export interface Config {
   commandPath: string;
 }
 
+// TODO: Change user from string to a unique identifier
 /**
  * Async function representing a Command Handler
  */
-export type CommandHandler = (msg: string, user: string) => Promise<void>;
+export type CommandHandler = (msg: string, user: string, apichannel: APIChannel) => Promise<void>;
 
 /**
  * Manyullyn class.
  */
 export class Manyullyn {
   constructor(config: Config, channel: APIChannel) {
-    this.commands = new Map<string, CommandHandler>();
-    if (!existsSync(config.commandPath)) {
-      logger.warn("Command path does not exist! Creating...");
-      mkdirSync(config.commandPath);
-      // Don't need to load commands since custom commands do not exist
-    } else {
-      logger.debug("Loading commands into map...");
-      readdirSync(config.commandPath)
-        .filter((str) => str.endsWith(".js"))
-        .forEach((val) => {
-          let cmdname = val.slice(0, -3);
-          let func = require(`${config.commandPath}/${val}`) as CommandHandler;
-          this.commands.set(cmdname, func);
-        });
-      logger.debug("Loaded commands!");
+    async () => {
+      if (!existsSync(config.commandPath)) {
+        logger.warn("Command path does not exist! Creating...");
+        await fs.mkdir(config.commandPath);
+        // Don't need to load commands since custom commands do not exist
+      } else {
+        logger.debug("Loading commands into map...");
+        (await fs.readdir(config.commandPath))
+          .filter((str) => str.endsWith(".js"))
+          .forEach((val) => {
+            let cmdname = val.slice(0, -3);
+            let func = require(`${config.commandPath}/${val}`) as CommandHandler;
+            this.commands.set(cmdname, func);
+          });
+        await logger.debug("Loaded commands!");
+      }
     }
+    this.commands = new Map<string, CommandHandler>();
     this.config = config;
     this.apichannel = channel;
   }
@@ -81,7 +84,7 @@ export class Manyullyn {
       if (this.commands.has(cmd)) {
         let cmdHandler = this.commands.get(cmd) as CommandHandler;
         await logger.debug(`Executing command ${cmd}`);
-        await cmdHandler(msg, user);
+        await cmdHandler(msg, user, this.apichannel);
       }
     }
     // TODO: Handle message filters
@@ -95,7 +98,7 @@ export class Manyullyn {
     if (this.commands.has(cmd)) {
       let cmdHandler = this.commands.get(cmd) as CommandHandler;
       await logger.debug(`Artifically executing command ${cmd}`);
-      await cmdHandler(msg, user);
+      await cmdHandler(msg, user, this.apichannel);
     } else {
       await logger.error(`Command ${cmd} does not exist!`);
     }
@@ -121,7 +124,7 @@ export class Manyullyn {
       this.commands.set(name, func);
       if (store) {
         let funcstr = func.toString();
-        funcstr += "export default ";
+        funcstr = "export default " + funcstr;
         if (existsSync(`${this.config.commandPath}/${name}.js`)) {
           await logger.fatal(
             "Command folder and commandmap not in sync! Command file already exists while it is not registered in map!"
