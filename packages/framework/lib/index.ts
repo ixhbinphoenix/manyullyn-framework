@@ -48,6 +48,7 @@ export type CommandHandler = (msg: string, user: string, apichannel: APIChannel)
  */
 export class Manyullyn {
   constructor(config: Config, channel: APIChannel) {
+    this.commands = new Map<string, CommandHandler>();
     async () => {
       if (!existsSync(config.commandPath)) {
         logger.warn("Command path does not exist! Creating...");
@@ -65,7 +66,6 @@ export class Manyullyn {
         await logger.debug("Loaded commands!");
       }
     }
-    this.commands = new Map<string, CommandHandler>();
     this.config = config;
     this.apichannel = channel;
   }
