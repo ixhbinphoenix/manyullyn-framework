@@ -15,6 +15,7 @@
 
 import { existsSync, mkdirSync, readdirSync } from "fs";
 import * as fs from "fs/promises";
+import { TransformStreamDefaultController } from "stream/web";
 import * as logger from "./log";
 
 /**
@@ -24,7 +25,8 @@ export interface APIChannel {
   reply: (msg: string) => Promise<void>;
 
   // Register command for discord, optional
-  registerCommand?: (user: string, func: CommandHandler) => Promise<void>;
+  registerCommand?: (cmd: string, func: CommandHandler) => Promise<void>;
+  unregisterCommand?: (cmd: string) => Promise<void>;
 }
 
 /**
@@ -116,9 +118,6 @@ export class Manyullyn {
     store: boolean = false
   ): Promise<void> {
     if (this.commands.has(name)) {
-      await logger.warn(
-        `Command ${name} was attempted to register a second time. This should have been checked before`
-      );
       await this.apichannel.reply(`Command ${name} already exists!`);
     } else {
       this.commands.set(name, func);
@@ -139,6 +138,21 @@ export class Manyullyn {
       if (this.apichannel.registerCommand) {
         await this.apichannel.registerCommand(name, func);
       }
+    }
+  }
+
+  /**
+   * Deletes a command
+   * @param name name of the command
+   */
+  public async deleteCommand(name: string) {
+    if (!this.commands.has(name)) {
+      await this.apichannel.reply(`Command ${name} does not exist!`);
+    } else {
+      if (existsSync(`${this.config.commandPath}/${name}.js`)) {
+        await fs.rm(`${this.config.commandPath}/${name}.js`);
+      }
+      this.commands.delete(name);
     }
   }
 }
