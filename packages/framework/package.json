@@ -1,6 +1,6 @@
 {
   "name": "@manyullyn/framework",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "author": "phoenix_13",
   "license": "GPL-3.0",
   "description": "A chatbot and command framework for everything",
@@ -9,7 +9,6 @@
     "lib": "lib"
   },
   "scripts": {
-    "preinstall": "npx only-allow pnpm",
     "build": "tsc",
     "format": "prettier -w --config ./.prettierrc.json .",
     "test": "vitest --run"

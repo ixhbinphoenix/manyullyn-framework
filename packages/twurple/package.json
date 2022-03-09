@@ -1,0 +1,40 @@
+{
+  "name": "@manyullyn/twurple",
+  "version": "0.0.4",
+  "description": "Twurple API Provider for manyullyn",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest --run",
+    "format": "prettier -w --config .prettierrc.json ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ixhbinphoenix/manyullyn-framework.git"
+  },
+  "keywords": [
+    "chatbot",
+    "command",
+    "twitch",
+    "twurple"
+  ],
+  "author": "phoenix_13",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/ixhbinphoenix/manyullyn-framework/issues"
+  },
+  "homepage": "https://github.com/ixhbinphoenix/manyullyn-framework#readme",
+  "devDependencies": {
+    "@types/node": "^17.0.17",
+    "c8": "^7.11.0",
+    "prettier": "^2.5.1",
+    "typescript": "^4.5.5",
+    "vitest": "^0.5.9"
+  },
+  "dependencies": {
+    "@manyullyn/framework": "workspace:*",
+    "@twurple/api": "^5.0.18",
+    "@twurple/auth": "^5.0.18",
+    "@twurple/chat": "^5.0.18"
+  }
+}

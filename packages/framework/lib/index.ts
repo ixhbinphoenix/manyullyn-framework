@@ -13,9 +13,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { existsSync, mkdirSync, readdirSync } from "fs";
+import { existsSync } from "fs";
 import * as fs from "fs/promises";
-import { TransformStreamDefaultController } from "stream/web";
 import * as logger from "./log";
 
 /**
@@ -24,6 +23,11 @@ import * as logger from "./log";
 export interface APIChannel {
   reply: (msg: string) => Promise<void>;
 
+  // For Accessing platform specific API
+  platformProvider?: {
+    platform: string;
+    apiClient: any;
+  };
   // Register command for discord, optional
   registerCommand?: (cmd: string, func: CommandHandler) => Promise<void>;
   unregisterCommand?: (cmd: string) => Promise<void>;
@@ -45,6 +49,7 @@ export interface Config {
  */
 export type CommandHandler = (msg: string, user: string, apichannel: APIChannel) => Promise<void>;
 
+// TODO: Command config permanence provider
 /**
  * Manyullyn class.
  */

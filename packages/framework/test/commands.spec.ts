@@ -28,7 +28,6 @@ describe("registering commands", async () => {
     async function temp_test(msg: string, user: string, apichannel: APIChannel) {
       await logger.info(`temp_test (${user}): ${msg}`);
     }
-    // I have no clue why VSCode complains when I remove this 'as CommandHandler' so I'm just going to keep it here
     await instance.registerCommand("temp_test", temp_test);
     await instance.runCommand("temp_test", "Trans rights!", "ixhbinphoenix");
   });
