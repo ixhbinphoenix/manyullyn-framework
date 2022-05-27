@@ -1,5 +1,11 @@
 # @manyullyn/framework
 
+## 0.0.5
+
+### Patch Changes
+
+- Fixed platform provider for twurple
+
 ## 0.0.4
 
 ### Patch Changes
