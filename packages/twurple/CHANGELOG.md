@@ -1,5 +1,13 @@
 # @manyullyn/twurple
 
+## 0.0.9
+
+### Patch Changes
+
+- Removed async constructor from framework
+- Updated dependencies
+  - @manyullyn/framework@0.0.9
+
 ## 0.0.8
 
 ### Patch Changes
