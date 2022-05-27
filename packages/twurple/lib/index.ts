@@ -15,9 +15,9 @@
 
 import { Config, Manyullyn } from "@manyullyn/framework";
 import * as logger from "@manyullyn/framework/dist/log";
-import { ApiClient } from "@twurple/api/lib";
-import { RefreshingAuthProvider } from "@twurple/auth/lib";
-import { ChatClient } from "@twurple/chat/lib";
+import { ApiClient } from "@twurple/api";
+import { RefreshingAuthProvider } from "@twurple/auth";
+import { ChatClient } from "@twurple/chat";
 import * as fs from "fs/promises";
 
 export interface manyurpleConfig {

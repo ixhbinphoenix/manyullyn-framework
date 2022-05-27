@@ -8,6 +8,9 @@
   "directories": {
     "lib": "lib"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
     "format": "prettier -w --config ./.prettierrc.json .",
