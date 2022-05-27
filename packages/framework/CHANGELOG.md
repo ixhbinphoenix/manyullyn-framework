@@ -1,5 +1,11 @@
 # @manyullyn/framework
 
+## 0.0.8
+
+### Patch Changes
+
+- Actually connect chatclient
+
 ## 0.0.7
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @manyullyn/twurple
 
+## 0.0.8
+
+### Patch Changes
+
+- Actually connect chatclient
+- Updated dependencies
+  - @manyullyn/framework@0.0.8
+
 ## 0.0.7
 
 ### Patch Changes
