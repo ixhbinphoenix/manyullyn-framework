@@ -25,16 +25,16 @@
   },
   "homepage": "https://github.com/ixhbinphoenix/manyullyn-framework#readme",
   "devDependencies": {
-    "@types/node": "^17.0.17",
-    "c8": "^7.11.0",
-    "prettier": "^2.5.1",
-    "typescript": "^4.5.5",
+    "@types/node": "^17.0.35",
+    "c8": "^7.11.3",
+    "prettier": "^2.6.2",
+    "typescript": "^4.7.2",
     "vitest": "^0.5.9"
   },
   "dependencies": {
     "@manyullyn/framework": "workspace:*",
-    "@twurple/api": "^5.0.18",
-    "@twurple/auth": "^5.0.18",
-    "@twurple/chat": "^5.0.18"
+    "@twurple/api": "^5.1.6",
+    "@twurple/auth": "^5.1.6",
+    "@twurple/chat": "^5.1.6"
   }
 }
