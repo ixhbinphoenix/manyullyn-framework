@@ -13,7 +13,7 @@ describe("Manyullyn constructor", () => {
       prefix: "!",
       commandPath: "./test/class_temp"
     };
-    if (!existsSync('./test/class_temp')) {
+    if (!existsSync("./test/class_temp")) {
       await mkdir("./test/class_temp");
     }
     let apichannel: APIChannel = {

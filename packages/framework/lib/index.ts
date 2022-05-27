@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { existsSync } from "fs";
+import { existsSync, mkdirSync, readdirSync } from "fs";
 import * as fs from "fs/promises";
 import * as logger from "./log";
 
@@ -47,7 +47,11 @@ export interface Config {
 /**
  * Async function representing a Command Handler
  */
-export type CommandHandler = (msg: string, user: string, apichannel: APIChannel) => Promise<void>;
+export type CommandHandler = (
+  msg: string,
+  user: string,
+  apichannel: APIChannel
+) => Promise<void>;
 
 // TODO: Command config permanence provider
 /**
@@ -56,22 +60,20 @@ export type CommandHandler = (msg: string, user: string, apichannel: APIChannel)
 export class Manyullyn {
   constructor(config: Config, channel: APIChannel) {
     this.commands = new Map<string, CommandHandler>();
-    async () => {
-      if (!existsSync(config.commandPath)) {
-        logger.warn("Command path does not exist! Creating...");
-        await fs.mkdir(config.commandPath);
-        // Don't need to load commands since custom commands do not exist
-      } else {
-        logger.debug("Loading commands into map...");
-        (await fs.readdir(config.commandPath))
-          .filter((str) => str.endsWith(".js"))
-          .forEach((val) => {
-            let cmdname = val.slice(0, -3);
-            let func = require(`${config.commandPath}/${val}`) as CommandHandler;
-            this.commands.set(cmdname, func);
-          });
-        await logger.debug("Loaded commands!");
-      }
+    if (!existsSync(config.commandPath)) {
+      logger.warn("Command path does not exist! Creating...");
+      mkdirSync(config.commandPath);
+      // Don't need to load commands since custom commands do not exist
+    } else {
+      logger.debug("Loading commands into map...");
+      readdirSync(config.commandPath)
+        .filter((str) => str.endsWith(".js"))
+        .forEach((val) => {
+          let cmdname = val.slice(0, -3);
+          let func = require(`${config.commandPath}/${val}`) as CommandHandler;
+          this.commands.set(cmdname, func);
+        });
+      logger.debug("Loaded commands!");
     }
     this.config = config;
     this.apichannel = channel;
