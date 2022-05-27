@@ -82,7 +82,10 @@ export class manyurple {
     }
     this.manyullyn = new Manyullyn(config.manyuconfig, {
       reply: this.sendMessage,
-      platformProvider: provider
+      platformProvider: {
+        platform: "twurple",
+        apiClient: provider
+      }
     });
 
     this.chatClient.onMessage(
