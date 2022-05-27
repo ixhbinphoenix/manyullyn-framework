@@ -1,5 +1,11 @@
 # @manyullyn/framework
 
+## 0.0.6
+
+### Patch Changes
+
+- Bumped twurple dependencies
+
 ## 0.0.5
 
 ### Patch Changes
