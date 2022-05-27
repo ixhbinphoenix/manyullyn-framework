@@ -74,6 +74,7 @@ export class manyurple {
       channels: [config.channel],
       authProvider
     });
+    this.chatClient.connect();
     this.apiClient = new ApiClient({ authProvider });
     this.config = config;
     let provider: platformProvider = {
