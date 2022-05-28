@@ -1,6 +1,6 @@
 {
   "name": "@manyullyn/twurple",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Twurple API Provider for manyullyn",
   "main": "dist/index.js",
   "scripts": {
@@ -39,6 +39,7 @@
     "vitest": "^0.5.9"
   },
   "dependencies": {
+    "@d-fischer/typed-event-emitter": "^3.2.3",
     "@manyullyn/framework": "workspace:*",
     "@twurple/api": "^5.1.6",
     "@twurple/auth": "^5.1.6",

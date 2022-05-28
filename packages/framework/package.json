@@ -1,6 +1,6 @@
 {
   "name": "@manyullyn/framework",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "author": "phoenix_13",
   "license": "GPL-3.0",
   "description": "A chatbot and command framework for everything",
@@ -39,6 +39,7 @@
     "vitest": "^0.5.9"
   },
   "dependencies": {
+    "@d-fischer/typed-event-emitter": "^3.2.3",
     "dotenv": "^16.0.0",
     "node-color-log": "^7.0.0"
   }

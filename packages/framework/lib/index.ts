@@ -16,6 +16,8 @@
 import { existsSync, mkdirSync, readdirSync } from "fs";
 import * as fs from "fs/promises";
 import * as logger from "./log";
+import type { EventBinder } from "@d-fischer/typed-event-emitter";
+import { EventEmitter } from "@d-fischer/typed-event-emitter";
 
 /**
  * API Channel for communicating from Manyullyn -> World
@@ -28,9 +30,6 @@ export interface APIChannel {
     platform: string;
     apiClient: any;
   };
-  // Register command for discord, optional
-  registerCommand?: (cmd: string, func: CommandHandler) => Promise<void>;
-  unregisterCommand?: (cmd: string) => Promise<void>;
 }
 
 /**
@@ -57,8 +56,16 @@ export type CommandHandler = (
 /**
  * Manyullyn class.
  */
-export class Manyullyn {
+export class Manyullyn extends EventEmitter {
+
+  onCommand: EventBinder<[command: string]> = this.registerEvent();
+
+  onCommandRegister: EventBinder<[command: string, store: boolean]> = this.registerEvent();
+
+  onCommandDelete: EventBinder<[command: string]> = this.registerEvent();
+
   constructor(config: Config, channel: APIChannel) {
+    super()
     this.commands = new Map<string, CommandHandler>();
     if (!existsSync(config.commandPath)) {
       logger.warn("Command path does not exist! Creating...");
@@ -70,13 +77,25 @@ export class Manyullyn {
         .filter((str) => str.endsWith(".js"))
         .forEach((val) => {
           let cmdname = val.slice(0, -3);
-          let func = require(`${config.commandPath}/${val}`) as CommandHandler;
+          let func = require(`${config.commandPath}${val}`).default as CommandHandler;
           this.commands.set(cmdname, func);
         });
       logger.debug("Loaded commands!");
     }
     this.config = config;
     this.apichannel = channel;
+
+    this.addInternalListener(this.onCommand, async (cmd: string) => {
+      await logger.debug(`Executing command ${cmd}`)
+    })
+
+    this.addInternalListener(this.onCommandRegister, async (cmd: string, store: boolean) => {
+      await logger.info(`Registered ${store ? "user" : "client"} command ${cmd}`)
+    })
+
+    this.addInternalListener(this.onCommandDelete, async (cmd: string) => {
+      await logger.info(`Deleted command ${cmd}`)
+    })
   }
   apichannel: APIChannel;
   config: Config;
@@ -92,11 +111,10 @@ export class Manyullyn {
       let cmd = msg.split(" ")[0].slice(1);
       if (this.commands.has(cmd)) {
         let cmdHandler = this.commands.get(cmd) as CommandHandler;
-        await logger.debug(`Executing command ${cmd}`);
         await cmdHandler(msg, user, this.apichannel);
+        this.emit(this.onCommand, cmd);
       }
     }
-    // TODO: Handle message filters
   }
 
   /**
@@ -106,8 +124,8 @@ export class Manyullyn {
   public async runCommand(cmd: string, msg: string, user: string) {
     if (this.commands.has(cmd)) {
       let cmdHandler = this.commands.get(cmd) as CommandHandler;
-      await logger.debug(`Artifically executing command ${cmd}`);
       await cmdHandler(msg, user, this.apichannel);
+      this.emit(this.onCommand, cmd)
     } else {
       await logger.error(`Command ${cmd} does not exist!`);
     }
@@ -126,8 +144,10 @@ export class Manyullyn {
   ): Promise<void> {
     if (this.commands.has(name)) {
       await this.apichannel.reply(`Command ${name} already exists!`);
+      await logger.debug(`User attempted to re-register ${name}`);
     } else {
       this.commands.set(name, func);
+      this.emit(this.onCommandRegister, name, store);
       if (store) {
         let funcstr = func.toString();
         funcstr = "export default " + funcstr;
@@ -142,9 +162,6 @@ export class Manyullyn {
           await fs.writeFile(`${this.config.commandPath}/${name}.js`, funcstr);
         }
       }
-      if (this.apichannel.registerCommand) {
-        await this.apichannel.registerCommand(name, func);
-      }
     }
   }
 
@@ -155,11 +172,13 @@ export class Manyullyn {
   public async deleteCommand(name: string) {
     if (!this.commands.has(name)) {
       await this.apichannel.reply(`Command ${name} does not exist!`);
+      await logger.debug(`User attempted to delete non-existent command ${name}`)
     } else {
       if (existsSync(`${this.config.commandPath}/${name}.js`)) {
         await fs.rm(`${this.config.commandPath}/${name}.js`);
       }
       this.commands.delete(name);
+      this.emit(this.onCommandDelete, name);
     }
   }
 }

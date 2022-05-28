@@ -18,13 +18,13 @@ import * as logger from "@manyullyn/framework/dist/log";
 import { ApiClient } from "@twurple/api";
 import { RefreshingAuthProvider } from "@twurple/auth";
 import { ChatClient } from "@twurple/chat";
+import type { EventBinder } from "@d-fischer/typed-event-emitter";
 import * as fs from "fs/promises";
 
 export interface manyurpleConfig {
   auth: auth;
   // TODO: Multi-channel support
   channel: string;
-  manyuconfig: Config;
 }
 
 export interface auth {
@@ -49,8 +49,20 @@ export interface platformProvider {
 /**
  * Manyullyn+Twurple class
  */
-export class manyurple {
-  constructor(config: manyurpleConfig) {
+export class manyurple extends Manyullyn {
+
+  /**
+   * @eventListener
+   */
+  onConnect: EventBinder<[]> = this.registerEvent();
+
+  /**
+   * @eventListener
+   */
+  onMessage: EventBinder<[channel: string, user: string, msg: string]> = this.registerEvent();
+
+
+  constructor(config: manyurpleConfig, manyuconfig: Config) {
     if (!config.auth.tokens) {
       logger.error(
         "Initial refreshing tokens not found! Please do the token setup first!"
@@ -70,39 +82,45 @@ export class manyurple {
       },
       config.auth.tokens
     );
-    this.chatClient = new ChatClient({
-      channels: [config.channel],
-      authProvider
-    });
-    async (chatClient = this.chatClient) => {
-      await chatClient.connect();
-    }
-    this.apiClient = new ApiClient({ authProvider });
-    this.config = config;
     let provider: platformProvider = {
-      apiClient: this.apiClient,
-      chatClient: this.chatClient
+      apiClient: new ApiClient({ authProvider }),
+      chatClient: new ChatClient({
+        channels: [config.channel],
+        authProvider
+      })
     }
-    this.manyullyn = new Manyullyn(config.manyuconfig, {
-      reply: this.sendMessage,
+    super(manyuconfig, {
+      reply: async (msg) => {
+        provider.chatClient.say(config.channel, msg);
+      },
       platformProvider: {
         platform: "twurple",
         apiClient: provider
       }
-    });
+    })
+    this.chatClient = provider.chatClient;
+    this.apiClient = provider.apiClient;
 
+    this.manyurpleConfig = config;
+    this.chatClient.connect()
+    this.chatClient.onConnect(() => {
+      this.emit(this.onConnect)
+    })
     this.chatClient.onMessage(
       async (channel: string, user: string, msg: string) => {
-        this.manyullyn.handleMessage(msg, user);
+        await this.handleMessage(msg, user);
       }
     );
+
+    this.addInternalListener(this.onConnect, async () => {
+      await logger.info("ChatClient connected")
+    })
   }
   chatClient: ChatClient;
   apiClient: ApiClient;
-  manyullyn: Manyullyn;
-  config: manyurpleConfig;
+  manyurpleConfig: manyurpleConfig;
 
   public async sendMessage(msg: string): Promise<void> {
-    this.chatClient.say(this.config.channel, msg);
+    this.chatClient.say(this.manyurpleConfig.channel, msg);
   }
 }
